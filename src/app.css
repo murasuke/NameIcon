@@ -1,0 +1,27 @@
+div {
+  margin-left: 20px;
+  color: #333;
+}
+
+dt{
+  /* font-size : 15px; */
+  font-weight : bold;
+
+  margin-bottom : 10px;
+
+  border-bottom-width : 1px;
+  border-bottom-style : solid;
+  border-bottom-color : #69C;
+
+  border-left-width : 7px;
+  border-left-style : solid;
+  border-left-color : #69C;
+
+  padding-top : 2px;
+  padding-left : 8px;
+  padding-bottom : 2px;
+}
+
+dd{
+  margin-bottom : 45px;
+}
