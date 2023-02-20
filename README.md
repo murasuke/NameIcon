@@ -1,63 +1,70 @@
-# 名前表示アイコンコンポーネント(React)
+# 名前表示アイコン コンポーネント(React)
 
-## 前書き
+## はじめに
 
-依然作った[TypeScriptで名前(文字)が入った丸いアイコン画像を作成する](https://qiita.com/murasuke/items/e41011d57d5d010e65e0)をReactでコンポーネント化しました。
+昔作った[TypeScriptで名前(文字)が入った丸いアイコン画像を作成する](https://qiita.com/murasuke/items/e41011d57d5d010e65e0)をReact(Suspense)でコンポーネント化しました。
 
 ![img](./img/img10.png)
 
+* canvasを使い画像化しています。画像作成(`canvas.convertToBlob()`)は非同期関数のため、React18の`Suspense`を利用して表示しています。
 
 ## サンプル
 
-https://murasuke.github.io/js-name-icon/
-
-* 名前のアイコンを作成してダウンロードします
-* スペースで区切っていない場合は、先頭2文字で作成します
-
-
+https://murasuke.github.io/NameIcon/
 
 ## 概要
 
 * 名前からアイコン画像を作成します(.png)。オプションで色やフォントを指定可能
   * スペースを含む場合、splitして最初の2文字を結合する '山田 太郎' -> '山太'。
   * スペースを含まない場合、先頭2文字にする '山田太郎' -> '山田'
-* 名前の文字列から、画像（オブジェクトURL）を生成して返します。imgタグのhrefにセットすると画像を表示できます。
-
-```typescript
-  const imageUrl = await iconMaker('山田 太郎');
-```
-
-### 関数定義
-
-* オプションは指定しなけれれば直径60pxの円でアイコンを作成します。
-
-```typescript
-// Icon作成オプション
-export type IconOption = {
-  size?: number,      // iconのサイズ
-  foreColor?: string, // フォントの色
-  backColor?: string, // 背景色
-  fontScale?: number, // フォントのサイズ(iconのサイズに対する比率(0.7程度が適当))
-  fontFamily?: string,// フォントの種類
-};
-
-// 関数定義
-const iconMaker = async(name: string, option?: IconOption): Promise<string> => {
-};
-
-export default iconMaker;
-```
+* 生成した画像をSuspenseを利用して表示します
 
 ## 利用方法
 
-* 表示したい名前を渡す
+* 表示したい名前を渡すとアイコンが表示されます
 
 ```typescript
+<>
   <NameIcon userName="山田 太郎" />
+  <NameIcon userName="山田太郎" />
+  <NameIcon userName="Mike Davis" />
+</>
 ```
+![img](./img/img11.png) ![img](./img/img12.png)  ![img](./img/img13.png)
+
+* サイズを指定
+```typescript
+<>
+  <NameIcon userName="山田 太郎" option={{ size: 20 }} />
+  <NameIcon userName="山田 太郎" option={{ size: 80 }} />
+</>
+```
+![img](./img/img20.png) ![img](./img/img21.png)
+
+* 色、フォントを指定
+```typescript
+<>
+  <NameIcon userName="山田太郎" option={{ foreColor: '#69C', backColor: '#FFF2F3' }} />
+  <NameIcon userName="山田 太郎" option={{ fontFamily: 'serif' }} />
+</>
+```
+![img](./img/img30.png) ![img](./img/img31.png)
+
+* スケール(画像に対する文字の大きさ)を指定
+```typescript
+<>
+  <NameIcon userName="山田 太郎" option={{ fontScale: 0.3 }} />
+  <NameIcon userName="山田 太郎" option={{ fontScale: 1.0 }} />
+</>
+```
+![img](./img/img40.png) ![img](./img/img41.png)
+
 
 ### ソース全体
 
+* 画像コンポーネント(canvasで非同期に生成した画像をSuspenseで表示する)
+
+NameIcon.tsx
 ```typescript
 import { FC, Suspense } from 'react';
 import iconMaker, { IconOption } from './iconMaker';
@@ -88,10 +95,14 @@ const NameIcon: IconMakerFC = ({ userName, option }) => (
   </Suspense>
 );
 
-export default NameIcon;
-
+expor default NameIcon;
 ```
 
+
+
+* 画像作成本体(canvasに名前を描画して画像化)
+
+iconMaker.ts
 ```typescript
 /**
  * 名前アイコン作成
